@@ -1,0 +1,60 @@
+name: ESP32-S3 Build
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install PlatformIO
+      run: |
+        pip install platformio
+        pio --version
+
+    - name: Build firmware
+      run: |
+        pio run
+
+    - name: Upload firmware
+      uses: actions/upload-artifact@v4
+      with:
+        name: esp32-s3-firmware
+        path: .pio/build/esp32-s3-dev/firmware.bin
+        retention-days: 30
+
+    - name: Upload bootloader
+      uses: actions/upload-artifact@v4
+      with:
+        name: esp32-s3-bootloader
+        path: .pio/build/esp32-s3-dev/bootloader.bin
+        retention-days: 30
+
+    - name: Upload partitions
+      uses: actions/upload-artifact@v4
+      with:
+        name: esp32-s3-partitions
+        path: .pio/build/esp32-s3-dev/partitions.bin
+        retention-days: 30
+
+    - name: Display build info
+      run: |
+        echo "📦 Build Complete"
+        echo "=================="
+        ls -la .pio/build/esp32-s3-dev/*.bin || echo "No .bin files found"
+        echo ""
+        echo "Firmware size:"
+        du -h .pio/build/esp32-s3-dev/firmware.bin || echo "firmware.bin not found"
