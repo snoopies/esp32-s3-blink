@@ -2,7 +2,7 @@
 
 // LED引脚定义
 // ESP32-S3 DevKitC-1 通常使用 GPIO 2 或 GPIO 15 作为内置LED
-#define LED_PIN 39
+#define LED_PIN 15
 
 void setup() {
   // 初始化串口
